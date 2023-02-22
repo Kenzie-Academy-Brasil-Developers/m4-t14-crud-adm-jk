@@ -1,9 +1,10 @@
 import { QueryConfig } from "pg";
-import  jwt  from "jsonwebtoken";
 import { client } from "../database";
 import { ILoginRequest } from "../interfaces/login.interfaces";
 import { IUserWithPassword } from '../interfaces/users.interfaces'
-import { AppError } from '../errors'
+import { AppError } from '../errors';
+import  jwt  from "jsonwebtoken";
+import { compare } from "bcryptjs";
 import 'dotenv/config'
 
 const userLoginService = async (loginData: ILoginRequest): Promise<string> => {
@@ -24,13 +25,17 @@ const userLoginService = async (loginData: ILoginRequest): Promise<string> => {
 
     const queryResult: IUserWithPassword = await client.query(queryConfig)
 
+    
     if(queryResult.rowCount == 0){
         throw new AppError('Wrong email or password', 401)
     };
 
-    if(loginData.password != queryResult.rows[0].password){
+   
+    const verifyPassword: boolean = await compare(loginData.password, queryResult.rows[0].password) 
+
+    if(!verifyPassword){
         throw new AppError('Wrong email or password', 401)
-    };
+    }
 
     const token: string = jwt.sign(
         {
