@@ -6,7 +6,8 @@ const createUserSchema = z.object({
     email: z.string().max(100).email(),
     password: z.string().max(120).transform((pass) =>{
         return hashSync(pass, 10)
-    })
+    }),
+    admin: z.boolean().optional()
 });
 
 const editUserSchema = z.object({
@@ -17,7 +18,6 @@ const editUserSchema = z.object({
 
 const returnUserSchema = createUserSchema.extend({
     id: z.number(),
-    admin: z.boolean(),
     active: z.boolean()
 });
 
