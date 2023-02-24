@@ -27,6 +27,10 @@ const userValidationMiddleware = async (req: Request, resp: Response, next: Next
         throw new AppError('User not found!', 404)
     }
 
+    if(req.user.admin){
+        return next();
+    }
+
     if(req.user.id != userId){
         throw new AppError('Insufficient Permission', 403)
     }
