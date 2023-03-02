@@ -25,10 +25,6 @@ const recoverUserService = async (userId: number): Promise<IUserWithoutPassword>
 
     const newUser = returnUserSchemaWithoutPassword.parse(queryResult.rows[0]);
 
-    if(newUser.active === true){
-        throw new AppError('User already active', 400)
-    }
-
     return newUser
 };
 
